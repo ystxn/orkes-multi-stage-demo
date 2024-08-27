@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Multi-Stage Demo</title>
+    <style>
+        * { font-family: "Lato",serif; font-size: 21px; }
+        button { padding: 1rem }
+        #messages { padding: 1rem 0 }
+    </style>
+</head>
+<body>
+    <button onClick="startWorkflow()">Start Workflow</button>
+    <button onClick="doAfter('A')">After A</button>
+    <button onClick="doAfter('B')">After B</button>
+    <div id="messages">
+
+    </div>
+    <script>
+        let workflowId;
+        const startWorkflow = async () => {
+            workflowId = (await fetch('start', { method: 'POST' })
+                .then(r => r.text()));
+            document.querySelector('#messages').innerHTML += 'Started new workflow: ' + workflowId + '<br/>';
+        };
+        const doAfter = async (stage) => {
+            await fetch(`done/${workflowId}/${stage}`, { method: 'POST' });
+            document.querySelector('#messages').innerHTML += 'Completed wait task stage ' + stage + ' on workflow ' + workflowId + '<br/>';
+        };
+
+        const eventSource = new EventSource('sse');
+        eventSource.onmessage = (event) => {
+            if (event.data === 'webhook') {
+                document.querySelector('#messages').innerHTML += 'Webhook received' + '<br/>';
+                fetch(`details/${workflowId}`)
+                    .then(r => r.json())
+                    .then(r => {
+                        const completedTasks = r.tasks.filter(t =>t.taskType === 'SUB_WORKFLOW' && t.status === 'COMPLETED');
+                        const { outputData } = completedTasks[completedTasks.length - 1];
+                        document.querySelector('#messages').innerHTML += 'Most recent output:' + JSON.stringify(outputData) + '<br/>';
+                    })
+            } else {
+                document.querySelector('#messages').innerHTML += event.data + '<br/>';
+            }
+        };
+        eventSource.onerror = (error) => {
+            document.querySelector('#messages').innerHTML += 'Error ' + JSON.stringify(error) + '<br/>';
+        };
+    </script>
+</body>
+</html>

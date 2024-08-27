@@ -1,0 +1,64 @@
+{
+  "createTime": 1724731774827,
+  "updateTime": 1724746802326,
+  "name": "SubFlowA",
+  "description": "SubFlowA",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "wait",
+      "taskReferenceName": "wait_ref",
+      "inputParameters": {
+        "duration": "3 seconds"
+      },
+      "type": "WAIT",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "inline",
+      "taskReferenceName": "inline_ref",
+      "inputParameters": {
+        "expression": "(function () {\n  return $.value1 + $.value2;\n})();",
+        "evaluatorType": "graaljs",
+        "value1": 1,
+        "value2": 2
+      },
+      "type": "INLINE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {
+    "someOutput": "some result from A"
+  },
+  "failureWorkflow": "",
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "yongsheng.tan@orkes.io",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "inputTemplate": {},
+  "enforceSchema": true
+}
